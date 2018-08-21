@@ -44,12 +44,6 @@ antrag <- antrag %>%
     status_datum = as_date(status_datum, format = "%d.%m.%Y", tz = "UTC"))
     
       
-  
-    
-    
-    
-
-
 glimpse(antrag)
 
 

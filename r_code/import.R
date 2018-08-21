@@ -1,4 +1,6 @@
 
-teilantraege <- fread(paste0(getwd(),"/data/Teilantraege_HOM36.csv"))
-vorgaenge <- fread(paste0(getwd(),"/data/Vorgaenge_HOM36.csv"))
+vorgaenge <- fread(paste0(getwd(),"/data/vorgaenge.csv"))
+teilantraege <- fread(paste0(getwd(),"/data/teilantraege.csv"))
+baustein <- fread(paste0(getwd(),"/data/bausteine.csv"))
+provisionen <- fread(paste0(getwd(),"/data/provisionen.csv"))
 filialen <- read.xlsx(paste0(getwd(),"/data/Filialstruktur_Coba.xlsx"),sheetIndex = 1)
