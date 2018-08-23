@@ -37,9 +37,7 @@ antrag <- antrag %>%
 # Es gibt ein weiteres Feld 'Statusdatum' , das das Datum des höchsten Status aufnimmt
 
 antrag <- antrag %>% 
-  mutate(Status = ifelse((Status == "ABGELEHNT_PRODUKTANBIETER" & is.na(AntragAbgelehntProduktanbieterAmDatum)),
-                         "UEBER_SCHNITTSTELLE_ABGELEHNT","ABGELEHNT_PRODUKTANBIETER"),
-         Statusdatum = case_when(
+  mutate(Statusdatum = case_when(
            !is.na(AntragWiderrufenAntragstellerAmDatum) ~AntragWiderrufenAntragstellerAmDatum,
            !is.na(AntragAbgelehntProduktanbieterAmDatum) ~AntragAbgelehntProduktanbieterAmDatum,
            !is.na(AntragUnterschriebenBeideAmDatum) ~AntragUnterschriebenBeideAmDatum,
@@ -49,6 +47,10 @@ antrag <- antrag %>%
            !is.na(AntragNichtAngenommenAntragstellerAmDatum) ~AntragNichtAngenommenAntragstellerAmDatum,
            !is.na(AntragBeantragtAntragstellerAmDatum) ~AntragBeantragtAntragstellerAmDatum
          ))
+
+antrag <- antrag %>%
+  mutate(Status_neu = as.factor(ifelse(Status == "ABGELEHNT_PRODUKTANBIETER" & is.na(AntragAbgelehntProduktanbieterAmDatum),
+                         "UEBER_SCHNITTSTELLE_ABGELEHNT",(as.character(Status)))))
 
 
 glimpse(antrag)
