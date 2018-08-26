@@ -36,5 +36,5 @@ vorgang <- vorgang %>%
 
 vorgang <- vorgang %>% 
   mutate(mehrfachID = paste0(Antragsteller1Vorname,Antragsteller1Nachname,Antragsteller1Geburtsdatum),
-         istMehrfach = ifelse(duplicated(mehrfachID),1,0))
+         istEinfach = ifelse(duplicated(mehrfachID),0,1))
 

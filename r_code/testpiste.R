@@ -1,5 +1,5 @@
 
-
+write.table(vor_an_l,paste0(getwd(),"/output/vor_an_l",Sys.Date(),".txt"),sep = "\t",row.names = FALSE)
 
 write.table(vor_an,paste0(getwd(),"/output/vorgang_antrag",Sys.Date(),".txt"),sep = "\t",row.names = FALSE)
 
