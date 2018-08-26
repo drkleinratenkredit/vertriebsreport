@@ -27,13 +27,14 @@ vorgang <- vorgang %>%
   )
 
 #--------------------------------------------------------------------------------------------
-# Das neue Objekt 'vorgang' wird mit einem Feld ergänzt, aus dem sich Mehrfach-Datensaetze
-# bestimmen lassen. Dieses Feld ist eine Zusammensetzung von Vorname, Name und
-# Geburtsdatum des Antragsteller1; die Variable 'mehrfach_vorgang' nimmt TRUE oder FALSE auf
+# Erzeugung der Variablen mehrfachID und istMehrfach
 #--------------------------------------------------------------------------------------------
+
+# Zu hinterfragen: Wann zählt eine Überleitung als Doppelt und soll herausgerechnet werden?
+# Beispiel: Vorgangsnummer RG2475 am 19.06.2018 angelegt und A88341 am 28.02.2018 angelegt 
+# beides Rocco Silipo
 
 vorgang <- vorgang %>% 
   mutate(mehrfachID = paste0(Antragsteller1Vorname,Antragsteller1Nachname,Antragsteller1Geburtsdatum),
-         mehrfach_vorgang = duplicated(mehrfachID)
-  )
+         istMehrfach = ifelse(duplicated(mehrfachID),1,0))
 

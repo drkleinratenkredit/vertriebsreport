@@ -1,14 +1,10 @@
-#-------------------
-# Tabellen vermengen
-#-------------------
+#--------------------------------
+# Joinen und Kennzahlen ermitteln
+#--------------------------------
 
-# ds1 <- inner_join(antrag, vorgang, by = "VorgangsNummer")
+# Zusammenfassung der Vorgänge und (Teil)Anträge zu einem Dataset
+vor_an <- left_join(vorgang, antrag, by = "VorgangsNummer")
 
-# ds2 <- left_join(ds1, baustein, by = )
-
-
-ds_v_a <- inner_join(vorgang, antrag, by = "VorgangsNummer")
+# An Dr. Klein übergeleitete Vorgänge, inklusive Mehrfach
 
 
-
-glimpse(ds1)
