@@ -25,6 +25,7 @@ antrag <- antrag %>%
          ProduktAnbieterId = as.factor(ProduktAnbieterId)
   )
 
+
 #----------------------------------------------------------------
 # Ermittlung des Status und des Datums des letzten Statuseintrags
 #----------------------------------------------------------------
@@ -52,5 +53,17 @@ antrag <- antrag %>%
   mutate(Status_neu = as.factor(ifelse(Status == "ABGELEHNT_PRODUKTANBIETER" & is.na(AntragAbgelehntProduktanbieterAmDatum),
                          "UEBER_SCHNITTSTELLE_ABGELEHNT",(as.character(Status)))))
 
+#-----------------------------------------------------------------------------------------
+# Zu einem Vorgang (einer Überleitung) kann es mehrere Teilanträge geben; 
+# mehrere Teilanträge bedueten aber immer noch einen und nur einen gerechneten Vorgang
+# Für diese Beobachtung wird die Variabe 'Anzahl_Vorgang_gerechnet' erzeugt; eine 1 an
+# der letzten Stelle der Antragsnummer wird durch eine 1 in 'Anzahl_Vorgang', angezeigt,
+# jeder andere Wert wird durch eine 0 dargestellt
+#------------------------------------------------------------------------------------------
+
+antrag <- antrag %>% 
+  mutate(Anzahl_Vorgang_gerechnet = ifelse((str_sub(AntragsNummer,-1))=="1",1,0))
 
 glimpse(antrag)
+
+
