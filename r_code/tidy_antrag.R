@@ -53,17 +53,20 @@ antrag <- antrag %>%
   mutate(Status_neu = as.factor(ifelse(Status == "ABGELEHNT_PRODUKTANBIETER" & is.na(AntragAbgelehntProduktanbieterAmDatum),
                          "UEBER_SCHNITTSTELLE_ABGELEHNT",(as.character(Status)))))
 
-#-----------------------------------------------------------------------------------------
-# Zu einem Vorgang (einer Überleitung) kann es mehrere Teilanträge geben; 
-# mehrere Teilanträge bedueten aber immer noch einen und nur einen gerechneten Vorgang
-# Für diese Beobachtung wird die Variabe 'Anzahl_Vorgang_gerechnet' erzeugt; eine 1 an
-# der letzten Stelle der Antragsnummer wird durch eine 1 in 'Anzahl_Vorgang', angezeigt,
-# jeder andere Wert wird durch eine 0 dargestellt
-#------------------------------------------------------------------------------------------
+
+# Statusrang erzeugen: Damit können alle Teilanträge eines Vorgangs zu einer Datenzeile 
+# zusammengefasst werden
 
 antrag <- antrag %>% 
-  mutate(Anzahl_Vorgang_gerechnet = ifelse((str_sub(AntragsNummer,-1))=="1",1,0))
-
-glimpse(antrag)
-
+  mutate(Statusrang = ifelse(Status_neu == "WIDERRUFEN_ANTRAGSTELLER",9,
+         ifelse(Status_neu == "ABGELEHNT_PRODUKTANBIETER",8,
+         ifelse(Status_neu == "UNTERSCHRIEBEN_BEIDE",7,
+         ifelse(Status_neu == "UNTERSCHRIEBEN_PRODUKTANBIETER",6,
+         ifelse(Status_neu == "ZURUECKGESTELLT_PRODUKTANBIETER",5,
+         ifelse(Status_neu == "UNTERSCHRIEBEN_ANTRAGSTELLER",4,
+         ifelse(Status_neu == "NICHT_ANGENOMMEN_ANTRAGSTELLER",3,
+         ifelse(Status_neu == "BEANTRAGT_ANTRAGSTELLER",2,
+         ifelse(Status_neu == "UEBER_SCHNITTSTELLE_ABGELEHNT",1,"")
+         )))))))))
+                      
 

@@ -22,9 +22,11 @@ vorgang <- vorgang %>%
          Antragsteller1Geburtsdatum = as_date(Antragsteller1Geburtsdatum),
          Antragsteller2Geburtsdatum = as_date(Antragsteller2Geburtsdatum),
          Verwendungszweck = as.factor(Verwendungszweck),
+         SummeFinanzierungswunschOhneZwifi = str_replace(SummeFinanzierungswunschOhneZwifi,",","."),
          SummeFinanzierungswunschOhneZwifi = as.numeric(SummeFinanzierungswunschOhneZwifi),
          ProduktArt = as.factor(ProduktArt)
   )
+glimpse(vorgang)
 
 #--------------------------------------------------------------------------------------------
 # Erzeugung der Variablen mehrfachID und istMehrfach
