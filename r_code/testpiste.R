@@ -11,4 +11,6 @@ write.table(vorgang,paste0(getwd(),"/output/vorgang",Sys.Date(),".txt"),sep = "\
 
 write.table(dataset5,paste0(getwd(),"/output/dataset5",Sys.Date(),".txt"),sep = "\t",row.names = FALSE)
 
+write.table(dataset6,paste0(getwd(),"/output/dataset6",Sys.Date(),".txt"),sep = "\t",row.names = FALSE)
+
 write.table(dataset,paste0(getwd(),"/output/dataset",Sys.Date(),".txt"),sep = "\t",row.names = FALSE)
