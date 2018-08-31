@@ -1,6 +1,21 @@
 "# vertriebsreport" 
 Grundlage für den Code sind die HOM36 Dateien
 
+Folgende Kennzahlen müssen ermittelt und ausgewiesen werden:
+
+- Anzahl aller Überleitungen
+
+- Anzahl aller Überleitungen ohne doppelte Kunden
+
+- Anzahl an "gewollten" Überleitungen von Coba an Dr. Klein
+
+- Anzahl Kunden mit Angebot
+
+- Anzahl eingereichter Angebote
+
+- Anzahl aller Sales
+
+
 Status in der Datei Teilanträge
 
 Die Variable 'Status' hat die Werte:

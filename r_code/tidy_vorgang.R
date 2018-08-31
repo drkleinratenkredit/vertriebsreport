@@ -26,7 +26,7 @@ vorgang <- vorgang %>%
          SummeFinanzierungswunschOhneZwifi = as.numeric(SummeFinanzierungswunschOhneZwifi),
          ProduktArt = as.factor(ProduktArt)
   )
-glimpse(vorgang)
+
 
 #--------------------------------------------------------------------------------------------
 # Erzeugung der Variablen mehrfachID und istMehrfach
@@ -42,6 +42,19 @@ vorgang <- vorgang %>%
          istMehrfach = ifelse(duplicated(mehrfachID),1,0),
          istEinfach = ifelse(istMehrfach == FALSE,1,0),
          anDrKleinUebergeleitet = ifelse(KundenbetreuerExternePartnerId == "",1,0))
+
+#---------------------------------------------------------------
+# Extrahierung der FilHB aus dem Feld TippgeberExternePartnerId
+#---------------------------------------------------------------
+vorgang <- vorgang %>% 
+  mutate(FilHB = str_sub(TippgeberExternePartnerId,1,5))
+
+
+#-----------------------------------
+# Hinzufügen der Coba Filialstruktur
+#-----------------------------------
+filialen <- filialen %>% 
+  mutate(FilHB = as.character(FilHB))
 
 
 

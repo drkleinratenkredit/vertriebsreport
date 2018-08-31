@@ -3,4 +3,4 @@
 #----------------------------------------------
 
 # Verwendung in tidy_vorgang.R
-observation_date_since = "2016-12-31"
+observation_date_since = "2015-12-31"
