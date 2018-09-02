@@ -9,9 +9,9 @@ vorgang_antrag <- left_join(vorgang,antrag, by = "VorgangsNummer")
 vorgang_antrag <- vorgang_antrag %>% 
   mutate(Statusrang = as.integer((ifelse(is.na(Statusrang),0,Statusrang))))
 
-ds0 <- arrange(vorgang_antrag, desc(Statusrang))
+vorgang_antrag <- arrange(vorgang_antrag, desc(Statusrang))
 
-ds1 <- ds0 %>% 
+dataset <- ds0 %>% 
   mutate(istSale = ifelse(Status_neu == "UNTERSCHRIEBEN_BEIDE",1,0),
          ist_mehrfach_Vorgangsnummer = ifelse(duplicated(VorgangsNummer),1,0),
          Sale_Volumen = ifelse(Status_neu == "UNTERSCHRIEBEN_BEIDE",SummeFinanzierungswunschOhneZwifi,0),

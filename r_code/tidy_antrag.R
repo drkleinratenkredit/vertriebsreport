@@ -54,8 +54,7 @@ antrag <- antrag %>%
                          "UEBER_SCHNITTSTELLE_ABGELEHNT",(as.character(Status)))))
 
 
-# Statusrang erzeugen: Damit können alle Teilanträge eines Vorgangs zu einer Datenzeile 
-# zusammengefasst werden
+# Statusrang erzeugen
 
 antrag <- antrag %>% 
   mutate(Statusrang = ifelse(Status_neu == "WIDERRUFEN_ANTRAGSTELLER",9,

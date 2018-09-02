@@ -29,7 +29,7 @@ vorgang <- vorgang %>%
 
 
 #--------------------------------------------------------------------------------------------
-# Erzeugung der Variablen mehrfachID und ist_mehrfach_uebergeleitet
+# Kennzahlen heraus arbeiten
 #--------------------------------------------------------------------------------------------
 
 # Zu hinterfragen: Wann zählt eine Überleitung als Doppelt und soll herausgerechnet werden?
