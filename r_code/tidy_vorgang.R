@@ -29,25 +29,40 @@ vorgang <- vorgang %>%
 
 
 #--------------------------------------------------------------------------------------------
-# Erzeugung der Variablen mehrfachID und istMehrfach
+# Kennzahlen heraus arbeiten
 #--------------------------------------------------------------------------------------------
 
 # Zu hinterfragen: Wann zählt eine Überleitung als Doppelt und soll herausgerechnet werden?
 # Beispiel: Vorgangsnummer RG2475 am 19.06.2018 angelegt und A88341 am 28.02.2018 angelegt 
 # beides Rocco Silipo
 
+vorgang <- arrange(vorgang, desc(VorgangAngelegtAmDatum))
+
 vorgang <- vorgang %>% 
-  mutate(mehrfachID = paste0(Antragsteller1Vorname,Antragsteller1Nachname,Antragsteller1Geburtsdatum),
-         bruttoLead = 1,
-         istMehrfach = ifelse(duplicated(mehrfachID),1,0),
-         istEinfach = ifelse(istMehrfach == FALSE,1,0),
-         anDrKleinUebergeleitet = ifelse(KundenbetreuerExternePartnerId == "",1,0))
+  mutate(mehrfachID = paste0(Antragsteller1Vorname,Antragsteller1Nachname,Antragsteller1Geburtsdatum,VorgangAngelegtAmDatum),
+         brutto_Lead = 1,
+         ist_mehrfach_uebergeleitet = ifelse(duplicated(mehrfachID),1,0),
+         ist_Einfach = ifelse(ist_mehrfach_uebergeleitet == FALSE,1,0),
+         an_DrKlein_uebergeleitet = ifelse(KundenbetreuerExternePartnerId == "" & 
+                                             ist_mehrfach_uebergeleitet != 1,1,0))
 
 #---------------------------------------------------------------
 # Extrahierung der FilHB aus dem Feld TippgeberExternePartnerId
 #---------------------------------------------------------------
 vorgang <- vorgang %>% 
   mutate(FilHB = str_sub(TippgeberExternePartnerId,1,5))
+
+#---------------------------------------------------------------------------------
+# Die Bestandteile vom Datum 'VorgangAngelagtAmDatum' werden erstellt und angefügt
+#---------------------------------------------------------------------------------
+monate = c("Januar","Februar","März","April","Mai","Jumi","Juli","August","September","Oktober","November","Dezember")
+tvor <- vorgang %>% 
+  mutate(angelegt_Jahr = year(VorgangAngelegtAmDatum),
+         angelegt_Monat = month(VorgangAngelegtAmDatum),
+         angelegt_Monatname = monate[month(VorgangAngelegtAmDatum)],
+         angelegt_Tag = day(VorgangAngelegtAmDatum),
+         angelegt_WTag = wday(VorgangAngelegtAmDatum, label = TRUE))
+
 
 
 #-----------------------------------
