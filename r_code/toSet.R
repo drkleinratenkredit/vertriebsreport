@@ -23,13 +23,7 @@ ds1 <- vorgang_antrag %>%
                                    (Status_neu == "UNTERSCHRIEBEN_BEIDE") |
                                    (Status_neu == "UNTERSCHRIEBEN_PRODUKTANBIETER") |
                                    (Status_neu == "ZURUECKGESTELLT_PRODUKTANBIETER"),SummeFinanzierungswunschOhneZwifi,0),
-         anzahl_Kunden_mit_Angebot = ifelse(!is.na(AntragsNummer) & ist_mehrfach_Vorgangsnummer == 0 & istMehrfach == 0,1,0))
+         anzahl_Kunden_mit_Angebot = ifelse(!is.na(AntragsNummer) & ist_mehrfach_Vorgangsnummer == 0 & istMehrfach == 0
+                                            & Statusrang !=1,1,0))
 
                                    
-
-
-
-
-
-
-
