@@ -1,7 +1,3 @@
-#-----------------------------------------------------------------------------
-# Aus der Datei 'teilantraege.csv' werden Felder selektiert und die erforderlichen
-# Datentypen entsprechend angepasst
-#-----------------------------------------------------------------------------
 
 antrag <- teilantraege %>% 
   select(VorgangsNummer,AntragsNummer,TeilAntragsNummer,ExterneVorgangsNummerDesProduktAnbieters,
@@ -54,10 +50,29 @@ antrag <- antrag %>%
                          "UEBER_SCHNITTSTELLE_ABGELEHNT",(as.character(Status)))))
 
 
+#----------------------------------------------------------------------------------------------------------------------
+# Wenn ein gerechnetes Angebot nicht zum Tragen kommt, es also gar nicht erst bei der Bank eingereicht wird oder
+# der Antrag wird eingereicht, aber der Nachforderung von Unterlagen wird nicht nach gekommen, 'räumen' einige
+# Banken wie z.B. die DSL Bank ihre 'Bestände' auf und stornieren die Anträge / Angebote. Zur Abbildung des Geschehens
+# soll es deswegen auch einen Status 'Storniert' geben. Die hier verwendete Logik:
+# Ist nach 6 Monaten (180 Tagen) nichts passiert, wird der Status 'Storniert' gesetzt.
+#----------------------------------------------------------------------------------------------------------------------
+
+antrag <- antrag %>% 
+  mutate(Status_neu = (ifelse(is.na(AntragNichtAngenommenAntragstellerAmDatum) &
+    is.na(AntragWiderrufenAntragstellerAmDatum) &
+    is.na(AntragUnterschriebenAntragstellerAmDatum) &
+    is.na(AntragUnterschriebenBeideAmDatum) &
+    is.na(AntragUnterschriebenProduktanbieterAmDatum)&
+    is.na(AntragAbgelehntProduktanbieterAmDatum) &
+    is.na(AntragZurueckgestelltProduktanbieterAmDatum) & (today()-AntragBeantragtAntragstellerAmDatum)
+    >= time_until_cancellation, "PRODUKTANBIETER_HAT_STORNIERT", as.character(Status_neu))))
+  
 # Statusrang erzeugen
 
 antrag <- antrag %>% 
-  mutate(Statusrang = ifelse(Status_neu == "WIDERRUFEN_ANTRAGSTELLER",9,
+  mutate(Statusrang = as.numeric(ifelse(Status_neu == "PRODUKTANBIETER_HAT_STORNIERT",10,
+         ifelse(Status_neu == "WIDERRUFEN_ANTRAGSTELLER",9,
          ifelse(Status_neu == "ABGELEHNT_PRODUKTANBIETER",8,
          ifelse(Status_neu == "UNTERSCHRIEBEN_BEIDE",7,
          ifelse(Status_neu == "UNTERSCHRIEBEN_PRODUKTANBIETER",6,
@@ -66,6 +81,8 @@ antrag <- antrag %>%
          ifelse(Status_neu == "NICHT_ANGENOMMEN_ANTRAGSTELLER",3,
          ifelse(Status_neu == "BEANTRAGT_ANTRAGSTELLER",2,
          ifelse(Status_neu == "UEBER_SCHNITTSTELLE_ABGELEHNT",1,"")
-         )))))))))
+         )))))))))))
                       
+
+
 
