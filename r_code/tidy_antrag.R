@@ -5,7 +5,7 @@ antrag <- teilantraege %>%
          AntragWiderrufenAntragstellerAmDatum,AntragUnterschriebenAntragstellerAmDatum,
          AntragUnterschriebenBeideAmDatum,AntragUnterschriebenProduktanbieterAmDatum,
          AntragAbgelehntProduktanbieterAmDatum,AntragZurueckgestelltProduktanbieterAmDatum,
-         ProduktAnbieterId,AntragAutomatischAbgelehnt,AntragManuellErzeugt
+         ProduktAnbieterId,AntragAutomatischAbgelehnt,AntragManuellErzeugt,StatusVonDatum
   )
 
 antrag <- antrag %>% 
@@ -18,32 +18,14 @@ antrag <- antrag %>%
          AntragUnterschriebenProduktanbieterAmDatum = as_date(AntragUnterschriebenProduktanbieterAmDatum),
          AntragAbgelehntProduktanbieterAmDatum = as_date(AntragAbgelehntProduktanbieterAmDatum),
          AntragZurueckgestelltProduktanbieterAmDatum = as_date(AntragZurueckgestelltProduktanbieterAmDatum),
-         ProduktAnbieterId = as.factor(ProduktAnbieterId)
+         ProduktAnbieterId = as.factor(ProduktAnbieterId),
+         StatusVonDatum = as_date(StatusVonDatum)
   )
 
-
-#----------------------------------------------------------------
-# Ermittlung des Status und des Datums des letzten Statuseintrags
-#----------------------------------------------------------------
-
-# Wenn der 'Status' 'ABGELEHNT_PRODUKTANBIETER' ist und im Feld 'AntragAbgelehntProduktanbieterAmDatum'
-# kein Datum vorhanden ist, dann wurde die Anfrage in der Vorprüfung abgelehnt und zwar am Datum, das
-# im Feld 'AntragBeantragtAntragstellerAmDatum' eingetragen ist
-
+#----------------------------------------------------------------------------------------------------------
 # Die Ablehnung in der Vorprüfung soll als neuer Status erfasst werden mit 'UEBER_SCHNITTSTELLE_ABGELEHNT'
 # Es gibt ein weiteres Feld 'Statusdatum' , das das Datum des höchsten Status aufnimmt
-
-antrag <- antrag %>% 
-  mutate(Statusdatum = case_when(
-           !is.na(AntragWiderrufenAntragstellerAmDatum) ~AntragWiderrufenAntragstellerAmDatum,
-           !is.na(AntragAbgelehntProduktanbieterAmDatum) ~AntragAbgelehntProduktanbieterAmDatum,
-           !is.na(AntragUnterschriebenBeideAmDatum) ~AntragUnterschriebenBeideAmDatum,
-           !is.na(AntragUnterschriebenProduktanbieterAmDatum) ~AntragUnterschriebenProduktanbieterAmDatum,
-           !is.na(AntragZurueckgestelltProduktanbieterAmDatum) ~AntragZurueckgestelltProduktanbieterAmDatum,
-           !is.na(AntragUnterschriebenAntragstellerAmDatum) ~AntragUnterschriebenAntragstellerAmDatum,
-           !is.na(AntragNichtAngenommenAntragstellerAmDatum) ~AntragNichtAngenommenAntragstellerAmDatum,
-           !is.na(AntragBeantragtAntragstellerAmDatum) ~AntragBeantragtAntragstellerAmDatum
-         ))
+#----------------------------------------------------------------------------------------------------------
 
 antrag <- antrag %>%
   mutate(Status_neu = as.factor(ifelse(Status == "ABGELEHNT_PRODUKTANBIETER" & is.na(AntragAbgelehntProduktanbieterAmDatum),
@@ -58,17 +40,31 @@ antrag <- antrag %>%
 # Ist nach 6 Monaten (180 Tagen) nichts passiert, wird der Status 'Storniert' gesetzt.
 #----------------------------------------------------------------------------------------------------------------------
 
-antrag <- antrag %>% 
-  mutate(Status_neu = (ifelse(is.na(AntragNichtAngenommenAntragstellerAmDatum) &
-    is.na(AntragWiderrufenAntragstellerAmDatum) &
-    is.na(AntragUnterschriebenAntragstellerAmDatum) &
-    is.na(AntragUnterschriebenBeideAmDatum) &
-    is.na(AntragUnterschriebenProduktanbieterAmDatum)&
-    is.na(AntragAbgelehntProduktanbieterAmDatum) &
-    is.na(AntragZurueckgestelltProduktanbieterAmDatum) & (today()-AntragBeantragtAntragstellerAmDatum)
-    >= time_until_cancellation, "PRODUKTANBIETER_HAT_STORNIERT", as.character(Status_neu))))
+# antrag <- antrag %>% 
+#   mutate(Status_neu = (ifelse(is.na(AntragNichtAngenommenAntragstellerAmDatum) &
+#     is.na(AntragWiderrufenAntragstellerAmDatum) &
+#     is.na(AntragUnterschriebenAntragstellerAmDatum) &
+#     is.na(AntragUnterschriebenBeideAmDatum) &
+#     is.na(AntragUnterschriebenProduktanbieterAmDatum)&
+#     is.na(AntragAbgelehntProduktanbieterAmDatum) &
+#     is.na(AntragZurueckgestelltProduktanbieterAmDatum))))
   
-# Statusrang erzeugen
+
+#---------------------------------------------------------------------------------
+# Die Bestandteile vom Datum 'StatusVonDatum' werden erstellt und angefügt
+#---------------------------------------------------------------------------------
+
+antrag <- antrag %>% 
+  mutate(status_Jahr = year(StatusVonDatum),
+         status_Monat = month(StatusVonDatum),
+         status_Monatname = monatsnamen[month(StatusVonDatum)],
+         status_Tag = day(StatusVonDatum),
+         status_WTag = wday(StatusVonDatum, label = TRUE))
+
+
+#-------------------------------------------------------------------------------
+# Statusrang erzeugen und die Tabelle nach Status sortieren (der höchste zuerst)
+#-------------------------------------------------------------------------------
 
 antrag <- antrag %>% 
   mutate(Statusrang = as.numeric(ifelse(Status_neu == "PRODUKTANBIETER_HAT_STORNIERT",10,
@@ -83,6 +79,18 @@ antrag <- antrag %>%
          ifelse(Status_neu == "UEBER_SCHNITTSTELLE_ABGELEHNT",1,"")
          )))))))))))
                       
+#--------------------------------------------------------------------------------------------------
+# Die Datensätze werden nach dem Statusrang sortiert und es verbleibt nur noch der (ein) Teilantrag
+# mit dem höchsten Status
+#--------------------------------------------------------------------------------------------------
+
+antrag <- arrange(antrag, desc(Statusrang))
+
+antrag <- antrag %>% 
+  mutate(mehrfach_vorgang = ifelse(duplicated(VorgangsNummer),1,0))
+
+antrag_einfach <- antrag %>% 
+  filter(mehrfach_vorgang != 1)
 
 
 

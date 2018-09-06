@@ -18,7 +18,7 @@ vorgang <- vorgang %>%
          Antragsteller2Geburtsdatum = as_date(Antragsteller2Geburtsdatum),
          Verwendungszweck = as.factor(Verwendungszweck),
          SummeFinanzierungswunschOhneZwifi = str_replace(SummeFinanzierungswunschOhneZwifi,",","."),
-         SummeFinanzierungswunschOhneZwifi = as.numeric(SummeFinanzierungswunschOhneZwifi),
+         SummeFinanzierungswunschOhneZwifi = as.integer(SummeFinanzierungswunschOhneZwifi),
          ProduktArt = as.factor(ProduktArt)
   )
 
@@ -44,11 +44,13 @@ vorgang <- vorgang %>%
          angelegt_WTag = wday(VorgangAngelegtAmDatum, label = TRUE))
 
 
-#--------------------------------------------------------------------------------------------
-# Kennzahlen heraus arbeiten
-#--------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
+# Mehrfachkunden werden identifiziert an dem neuen Wert Vorname+Nachname+Geburtsdatum+Datum Vorgang angelegt
+#------------------------------------------------------------------------------------------------------------
 
 vorgang <- vorgang %>% 
-  mutate(mehrfachID = paste0(Antragsteller1Vorname,Antragsteller1Nachname,Antragsteller1Geburtsdatum,VorgangAngelegtAmDatum))
+  mutate(mehrfach_Kunde = paste0(Antragsteller1Vorname,Antragsteller1Nachname,Antragsteller1Geburtsdatum,VorgangAngelegtAmDatum),
+         ist_mehrfach_Kunde = ifelse(duplicated(mehrfach_Kunde),1,0))
+
 
          
