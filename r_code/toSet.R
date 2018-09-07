@@ -9,6 +9,8 @@ filialen <- filialen %>%
 
 vorgang <- right_join(vorgang,filialen, by = "FilHB")
 
+antrag_einfach <- left_join(antrag_einfach, rsv_baustein, by = "AntragsNummer")
+
 dataset <- left_join(vorgang, antrag_einfach, by = "VorgangsNummer")
 
 

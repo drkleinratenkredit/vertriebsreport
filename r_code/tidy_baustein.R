@@ -12,3 +12,10 @@ baustein <- bausteine %>%
          Produktkategorie = as.factor(Produktkategorie),
          LaufzeitJahre = LaufzeitJahre * 12)
 names(baustein)[8] <- "LaufzeitMonate"
+
+# Zur Zeit wird aus dieser datei nur die Erkenntnis über abgeschlossene RSV benötigt
+
+rsv_baustein <- baustein %>% 
+  select(AntragsNummer, BausteinArt) %>% 
+  filter(BausteinArt == "Restschuldversicherung")
+
