@@ -1,50 +1,33 @@
-#----------------------------------------
-# Joinen und Kennzahlen ermitteln
-#----------------------------------------
+#--------------------------------------------
+# Joinen, Kennzahlen ermitteln und ausliefern
+#--------------------------------------------
 
-dataset <- full_join(vorgang,antrag,by = "VorgangsNummer")
+ds <- full_join(vorgang,antrag,by = "VorgangsNummer")
 
 # Sortierung nach Statusrang
-dataset <- arrange(dataset, desc(Statusrang))
+ds <- arrange(ds, desc(Statusrang))
 
 # Kennzeichnung Mehrfachvorgangsnummern
-dataset <- dataset %>% 
-  mutate(vorgangsnummer_mehrfach = ifelse(duplicated(VorgangsNummer),1,0))
+ds <- ds %>% 
+  mutate(vorgangsnummer_mehrfach = ifelse(duplicated(VorgangsNummer),1,0)) %>% 
+  filter(vorgangsnummer_mehrfach == 0 | Statusrang == 8 | Statusrang == 7)
+
+# dataset_unter_den_Tisch_gefallen <- ds %>% 
+#   filter(vorgangsnummer_mehrfach == 1)
 
 
-
-dataset_einfach <- dataset %>% 
-  filter(vorgangsnummer_mehrfach == 0 | Statusrang == 8)
-
-dataset_untermTisch <- dataset %>% 
-  filter(vorgangsnummer_mehrfach == 1)
-
-ds9 <- dataset_untermTisch
-
-
-
-
-ds <- dataset2 %>% 
-  mutate(ist_uebergeleitet = 1,
-         ohne_doppelte = ifelse(einfach_Kunde == 1,1,0),
+dataset <- ds %>% 
+  mutate(coba_hat_abgelehnt = 1,
+         ablehnungen_ohne_doppelte = ifelse(einfach_Kunde == 1,1,0),
          ist_drk_bearbeitet = ifelse((!is.na(AntragsNummer) | KundenbetreuerName == "in the Field, Martin"),1,0),
          ist_angebot_erstellt = ifelse(Statusrang > 1,1,0),
-         ist_angebot_eingereicht = ifelse(Statusrang > 4,1,0),
-         ist_sale = ifelse(Statusrang == 6 | Statusrang == 7,1,0),
-         salevolumen = ifelse(Statusrang == 6 | Statusrang == 7,SummeFinanzierungswunschOhneZwifi,0)
+         ist_angebot_eingereicht = ifelse(Statusrang > 3,1,0),
+         ist_sale = ifelse(Statusrang == 7 | Statusrang == 8,1,0),
+         salevolumen = ifelse(Statusrang == 7 | Statusrang == 8,SummeFinanzierungswunschOhneZwifi,0)
   )
 
-ds2 <- arrange(ds, desc(Statusrang))
 
-ds2 <- ds2 %>% 
-  mutate(mehrfach = ifelse(duplicated(VorgangsNummer),1,0))
+write.table(dataset,paste0(getwd(),"/output/dataset_",Sys.Date(),".txt"),sep = "\t",row.names = FALSE)
 
-ds <- ds %>% 
-  filter(mehrfach == 0)
-
-antrag_group <- antrag %>% 
-  group_by(VorgangsNummer) %>% 
-  summarize(Statusrang == 7)
-
-
+print("Fertig")
 

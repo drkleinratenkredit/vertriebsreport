@@ -13,7 +13,7 @@ baustein <- bausteine %>%
          LaufzeitJahre = LaufzeitJahre * 12)
 names(baustein)[8] <- "LaufzeitMonate"
 
-# Zur Zeit wird aus dieser datei nur die Erkenntnis über abgeschlossene RSV benötigt
+# Zur Zeit wird aus dieser Datei nur die Erkenntnis über mi beantragte RSV benötigt
 
 rsv_baustein <- baustein %>% 
   select(AntragsNummer, BausteinArt) %>% 

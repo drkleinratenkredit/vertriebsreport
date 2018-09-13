@@ -49,9 +49,9 @@ antrag <- antrag %>%
 antrag <- antrag %>% 
   mutate(Statusrang = as.numeric(ifelse(Status_neu == "PRODUKTANBIETER_HAT_STORNIERT",10,
          ifelse(Status_neu == "WIDERRUFEN_ANTRAGSTELLER",9,
+         ifelse(Status_neu == "UNTERSCHRIEBEN_BEIDE",8,  
+         ifelse(Status_neu == "UNTERSCHRIEBEN_PRODUKTANBIETER",7,     
          ifelse(Status_neu == "ABGELEHNT_PRODUKTANBIETER",6,
-         ifelse(Status_neu == "UNTERSCHRIEBEN_BEIDE",8,
-         ifelse(Status_neu == "UNTERSCHRIEBEN_PRODUKTANBIETER",7,
          ifelse(Status_neu == "ZURUECKGESTELLT_PRODUKTANBIETER",5,
          ifelse(Status_neu == "UNTERSCHRIEBEN_ANTRAGSTELLER",4,
          ifelse(Status_neu == "NICHT_ANGENOMMEN_ANTRAGSTELLER",3,
