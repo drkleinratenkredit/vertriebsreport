@@ -24,12 +24,11 @@ antrag <- antrag %>%
 
 
 #----------------------------------------------------------------------------------------------------------
-# Die Ablehnung in der Vorprüfung soll als neuer Status erfasst werden mit 'UEBER_SCHNITTSTELLE_ABGELEHNT'
-# Es gibt ein weiteres Feld 'Statusdatum' , das das Datum des höchsten Status aufnimmt
+# Die Ablehnung in der Vorprüfung soll als neuer Status erfasst werden mit 'ANTRAG_AUTOMATISCH_ABGELEHNT'
 #----------------------------------------------------------------------------------------------------------
 antrag <- antrag %>%
   mutate(Status_neu = as.factor(ifelse(Status == "ABGELEHNT_PRODUKTANBIETER" & is.na(AntragAbgelehntProduktanbieterAmDatum),
-                         "UEBER_SCHNITTSTELLE_ABGELEHNT",(as.character(Status)))))
+                                       "ANTRAG_AUTOMATISCH_ABGELEHNT",(as.character(Status)))))
 
 
 #---------------------------------------------------------------------------------
@@ -56,11 +55,24 @@ antrag <- antrag %>%
          ifelse(Status_neu == "UNTERSCHRIEBEN_ANTRAGSTELLER",4,
          ifelse(Status_neu == "NICHT_ANGENOMMEN_ANTRAGSTELLER",3,
          ifelse(Status_neu == "BEANTRAGT_ANTRAGSTELLER",2,
-         ifelse(Status_neu == "UEBER_SCHNITTSTELLE_ABGELEHNT",1,"")
+         ifelse(Status_neu == "ANTRAG_AUTOMATISCH_ABGELEHNT",1,"")
          )))))))))))
     
- 
-# Kennzeichnung, ob RSV eingebunden ist
 
+#----------------------------------------------------------- 
+# Kennzeichnung Auszahlungsbetrag und ob RSV eingebunden ist
+#-----------------------------------------------------------
 antrag <- left_join(antrag, rsv_baustein, by = "AntragsNummer")
+
+
+#--------------------------------------------------------------------------------------------------------------------------
+# Aufräumaktion der DSL dokumentieren:
+# Von Zeit zu Zeit befreit die DSL Bank ihr System von erzeugten Angeboten, die nicht eingereicht wurden.
+# Das Aufräumen erfolgt, indem der Status jeweils weiter gedreht wird, bis die DSL den Status 'Abgelehnt'
+# setzen kann. Dadurch werden bei uns im System, Anträge auf 'Eingereicht' gesetzt, die tatsächlich nie eingereicht wurden.
+#--------------------------------------------------------------------------------------------------------------------------
+antrag <- antrag %>% 
+  mutate(DSL_hat_storniert = ifelse(ProduktAnbieterId == "DSL Bank" & (StatusVonDatum - AntragBeantragtAntragstellerAmDatum) > 50 & Statusrang > 3,1,0))
+
+
 

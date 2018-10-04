@@ -3,7 +3,7 @@
 #----------------------------------------------
 
 # Verwendung in tidy_vorgang.R
-observation_date_since = "2016-12-31"
+observation_date_since = as.Date("2016-12-31")
 monatsnamen = c("Januar","Februar","Maerz","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember") 
 
 # Verwendung in tidy_antrag.R
