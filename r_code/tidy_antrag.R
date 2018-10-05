@@ -26,10 +26,14 @@ antrag <- antrag %>%
 #----------------------------------------------------------------------------------------------------------
 # Die Ablehnung in der Vorprüfung soll als neuer Status erfasst werden mit 'ANTRAG_AUTOMATISCH_ABGELEHNT'
 #----------------------------------------------------------------------------------------------------------
-antrag <- antrag %>%
-  mutate(Status_neu = as.factor(ifelse(Status == "ABGELEHNT_PRODUKTANBIETER" & is.na(AntragAbgelehntProduktanbieterAmDatum),
-                                       "ANTRAG_AUTOMATISCH_ABGELEHNT",(as.character(Status)))))
 
+
+antrag <- antrag %>%
+  mutate(Status_neu = Status)
+
+antrag <- antrag %>%
+  mutate(Status_neu = as.factor(ifelse(AntragAutomatischAbgelehnt == TRUE,
+                                       "ANTRAG_AUTOMATISCH_ABGELEHNT",(as.character(Status)))))
 
 #---------------------------------------------------------------------------------
 # Die Bestandteile vom Datum 'StatusVonDatum' werden erstellt und angefügt
@@ -72,7 +76,7 @@ antrag <- left_join(antrag, rsv_baustein, by = "AntragsNummer")
 # setzen kann. Dadurch werden bei uns im System, Anträge auf 'Eingereicht' gesetzt, die tatsächlich nie eingereicht wurden.
 #--------------------------------------------------------------------------------------------------------------------------
 antrag <- antrag %>% 
-  mutate(DSL_hat_storniert = ifelse(ProduktAnbieterId == "DSL Bank" & (StatusVonDatum - AntragBeantragtAntragstellerAmDatum) > 50 & Statusrang > 3,1,0))
+  mutate(DSL_hat_storniert = ifelse(ProduktAnbieterId == "DSL_BANK_RATENKREDIT" & (StatusVonDatum - AntragBeantragtAntragstellerAmDatum) > 50 & Statusrang > 3,1,0))
 
 
 

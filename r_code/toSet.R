@@ -17,7 +17,7 @@ dataset <- ds %>%
   mutate(coba_hat_abgelehnt = 1,
          ablehnungen_ohne_doppelte = ifelse(einfach_Kunde == 1,1,0),
          ist_drk_bearbeitet = ifelse((!is.na(AntragsNummer) | KundenbetreuerName == "in the Field, Martin"),1,0),
-         ist_angebot_erstellt = ifelse(Statusrang == 2,1,0),
+         ist_angebot_erstellt = ifelse(Statusrang > 2,1,0),
          ist_angebot_eingereicht = ifelse(Statusrang > 3,1,0),
          ist_sale = ifelse(Statusrang == 7 | Statusrang == 8,1,0),
          salevolumen = ifelse(Statusrang == 7 | Statusrang == 8,SummeFinanzierungswunschOhneZwifi,0),
