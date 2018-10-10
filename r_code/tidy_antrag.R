@@ -1,11 +1,16 @@
 
-antrag <- teilantraege %>% 
+#-------------------------------------------------------------------------------
+# Nur im Report 'bausteine' wird der tatsächliche Auszahlungsbetrag dokumentiert
+#-------------------------------------------------------------------------------
+t_antrag <- left_join(teilantraege, kreditbetrag_baustein, by = "AntragsNummer")
+
+antrag <- t_antrag %>% 
   select(VorgangsNummer,AntragsNummer,TeilAntragsNummer,ExterneVorgangsNummerDesProduktAnbieters,
          Status,AntragBeantragtAntragstellerAmDatum,AntragNichtAngenommenAntragstellerAmDatum,
          AntragWiderrufenAntragstellerAmDatum,AntragUnterschriebenAntragstellerAmDatum,
          AntragUnterschriebenBeideAmDatum,AntragUnterschriebenProduktanbieterAmDatum,
          AntragAbgelehntProduktanbieterAmDatum,AntragZurueckgestelltProduktanbieterAmDatum,
-         ProduktAnbieterId,AntragAutomatischAbgelehnt,AntragManuellErzeugt,StatusVonDatum
+         ProduktAnbieterId,AntragAutomatischAbgelehnt,AntragManuellErzeugt,StatusVonDatum,AuszahlungsBetrag
   )
 
 antrag <- antrag %>% 
@@ -27,13 +32,10 @@ antrag <- antrag %>%
 # Die Ablehnung in der Vorprüfung soll als neuer Status erfasst werden mit 'ANTRAG_AUTOMATISCH_ABGELEHNT'
 #----------------------------------------------------------------------------------------------------------
 
-
 antrag <- antrag %>%
-  mutate(Status_neu = Status)
-
-antrag <- antrag %>%
-  mutate(Status_neu = as.factor(ifelse(AntragAutomatischAbgelehnt == TRUE,
+  mutate(Status_neu = as.factor(ifelse(Status == "ABGELEHNT_PRODUKTANBIETER" & AntragAutomatischAbgelehnt == TRUE,
                                        "ANTRAG_AUTOMATISCH_ABGELEHNT",(as.character(Status)))))
+
 
 #---------------------------------------------------------------------------------
 # Die Bestandteile vom Datum 'StatusVonDatum' werden erstellt und angefügt
@@ -41,7 +43,7 @@ antrag <- antrag %>%
 antrag <- antrag %>% 
   mutate(status_Jahr = year(StatusVonDatum),
          status_Monat = month(StatusVonDatum),
-         status_Monatname = monatsnamen[month(StatusVonDatum)],
+         status_Monatname = name_of_month[month(StatusVonDatum)],
          status_Tag = day(StatusVonDatum),
          status_WTag = wday(StatusVonDatum, label = TRUE))
 
@@ -63,9 +65,9 @@ antrag <- antrag %>%
          )))))))))))
     
 
-#----------------------------------------------------------- 
-# Kennzeichnung Auszahlungsbetrag und ob RSV eingebunden ist
-#-----------------------------------------------------------
+#-------------------------------------- 
+# Kennzeichnung, ob RSV eingebunden ist
+#--------------------------------------
 antrag <- left_join(antrag, rsv_baustein, by = "AntragsNummer")
 
 
@@ -76,7 +78,7 @@ antrag <- left_join(antrag, rsv_baustein, by = "AntragsNummer")
 # setzen kann. Dadurch werden bei uns im System, Anträge auf 'Eingereicht' gesetzt, die tatsächlich nie eingereicht wurden.
 #--------------------------------------------------------------------------------------------------------------------------
 antrag <- antrag %>% 
-  mutate(DSL_hat_storniert = ifelse(ProduktAnbieterId == "DSL_BANK_RATENKREDIT" & (StatusVonDatum - AntragBeantragtAntragstellerAmDatum) > 50 & Statusrang > 3,1,0))
+  mutate(DSL_hat_storniert = ifelse(ProduktAnbieterId == "DSL_BANK_RATENKREDIT" & (StatusVonDatum - AntragBeantragtAntragstellerAmDatum) > days_until_cancellation & Statusrang > 3,1,0))
 
 
 

@@ -13,8 +13,11 @@ baustein <- bausteine %>%
          LaufzeitJahre = LaufzeitJahre * 12)
 names(baustein)[8] <- "LaufzeitMonate"
 
-# Zur Zeit werden aus dieser Datei Informationen zu Ratenschutz und Auszahlungsbetrag benötigt
+# Zur Zeit werden aus dem Report 'bausteine' Informationen zu Ratenschutz und Auszahlungsbetrag benötigt
 rsv_baustein <- baustein %>% 
   select(AntragsNummer, BausteinArt) %>% 
   filter(BausteinArt == "Restschuldversicherung")
 
+kreditbetrag_baustein <- baustein %>% 
+  select(AntragsNummer, AuszahlungsBetrag) %>% 
+  filter(!is.na(AuszahlungsBetrag))

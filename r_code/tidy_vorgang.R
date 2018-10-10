@@ -7,10 +7,9 @@ vorgang <- vorgaenge %>%
          KundenbetreuerName,KundenbetreuerExternePartnerId,BearbeiterPartnerName,
          Antragsteller1Vorname,Antragsteller1Nachname,Antragsteller1Geburtsdatum,
          Antragsteller2Vorname,Antragsteller2Nachname,Antragsteller2Geburtsdatum,
-         Verwendungszweck,SummeFinanzierungswunschOhneZwifi,ProduktArt,TippgeberExternePartnerId)
-  #filter(VorgangAngelegtAmDatum > observation_date_since, Antragsteller1Nachname != "")
+         Verwendungszweck,SummeFinanzierungswunschOhneZwifi,ProduktArt,TippgeberExternePartnerId) 
   
-
+  
 vorgang <- vorgang %>% 
   mutate(Frontend = as.factor(Frontend),VorgangAngelegtAmDatum = dmy(VorgangAngelegtAmDatum),
          ImportQuelle = as.factor(ImportQuelle),
@@ -19,10 +18,12 @@ vorgang <- vorgang %>%
          Verwendungszweck = as.factor(Verwendungszweck),
          SummeFinanzierungswunschOhneZwifi = str_replace(SummeFinanzierungswunschOhneZwifi,",","."),
          SummeFinanzierungswunschOhneZwifi = as.integer(SummeFinanzierungswunschOhneZwifi),
-         ProduktArt = as.factor(ProduktArt)
+         ProduktArt = as.factor(ProduktArt),
+         coba_hat_abgelehnt = 1
   )
 
-
+vorgang <- vorgang %>% 
+  filter(VorgangAngelegtAmDatum > observation_date_since, Antragsteller1Nachname != "")
 
 #-------------------------------------------------------------------------
 # Die ersten 5 Stellen von 'TippgeberExternePartnerId' bilden die FilHB ab
@@ -31,14 +32,13 @@ vorgang <- vorgang %>%
   mutate(FilHB = str_sub(TippgeberExternePartnerId,1,5))
 
 
-
 #---------------------------------------------------------------------------------
 # Die Bestandteile vom Datum 'VorgangAngelagtAmDatum' werden erstellt und angefügt
 #---------------------------------------------------------------------------------
 vorgang <- vorgang %>% 
   mutate(angelegt_Jahr = year(VorgangAngelegtAmDatum),
          angelegt_Monat = month(VorgangAngelegtAmDatum),
-         angelegt_Monatname = monatsnamen[month(VorgangAngelegtAmDatum)],
+         angelegt_Monatname = name_of_month[month(VorgangAngelegtAmDatum)],
          angelegt_Tag = day(VorgangAngelegtAmDatum),
          angelegt_WTag = wday(VorgangAngelegtAmDatum, label = TRUE))
 
