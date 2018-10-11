@@ -30,11 +30,18 @@ antrag <- antrag %>%
 
 #----------------------------------------------------------------------------------------------------------
 # Die Ablehnung in der Vorprüfung soll als neuer Status erfasst werden mit 'ANTRAG_AUTOMATISCH_ABGELEHNT'
+# + Abfangen der Santander-Problematik; für die Bank gibt es den Status 'vielleicht': Antrag wird in KS
+# erzeugt und eine Stunde später wieder abgesagt
 #----------------------------------------------------------------------------------------------------------
 
 antrag <- antrag %>%
   mutate(Status_neu = as.factor(ifelse(Status == "ABGELEHNT_PRODUKTANBIETER" & AntragAutomatischAbgelehnt == TRUE,
-                                       "ANTRAG_AUTOMATISCH_ABGELEHNT",(as.character(Status)))))
+                                       "ANTRAG_AUTOMATISCH_ABGELEHNT",
+                                       ifelse(ProduktAnbieterId == "SANTANDER_CONSUMER_BANK_RATENKREDIT" &
+                                                Status == "ABGELEHNT_PRODUKTANBIETER" & (StatusVonDatum - AntragBeantragtAntragstellerAmDatum) == 0 &
+                                                AntragAutomatischAbgelehnt == FALSE,
+                                              "ANTRAG_AUTOMATISCH_ABGELEHNT", (as.character(Status))))))
+          
 
 
 #---------------------------------------------------------------------------------
