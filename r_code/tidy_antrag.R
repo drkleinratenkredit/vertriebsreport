@@ -33,7 +33,6 @@ antrag <- antrag %>%
 # + Abfangen der Santander-Problematik; für die Bank gibt es den Status 'vielleicht': Antrag wird in KS
 # erzeugt und eine Stunde später wieder abgesagt
 #----------------------------------------------------------------------------------------------------------
-
 antrag <- antrag %>%
   mutate(Status_neu = as.factor(ifelse(Status == "ABGELEHNT_PRODUKTANBIETER" & AntragAutomatischAbgelehnt == TRUE,
                                        "ANTRAG_AUTOMATISCH_ABGELEHNT",
@@ -42,7 +41,6 @@ antrag <- antrag %>%
                                                 AntragAutomatischAbgelehnt == FALSE,
                                               "ANTRAG_AUTOMATISCH_ABGELEHNT", (as.character(Status))))))
           
-
 
 #---------------------------------------------------------------------------------
 # Die Bestandteile vom Datum 'StatusVonDatum' werden erstellt und angefügt

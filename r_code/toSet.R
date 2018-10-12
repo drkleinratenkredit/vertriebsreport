@@ -23,6 +23,19 @@ dataset <- ds %>%
          ist_manuell_angelegt = ifelse(EigeneVorgangsNummerDesVertriebs == "",1,0)
   )
 
+# Für das Coba Dataset werden die MA verwischt
+ds_coba <- dataset %>%
+  mutate(AuswertungsEbene3Ep2PartnerName = "",
+         KundenbetreuerName = "",
+         BearbeiterPartnerName = "")
+
+write.table(ds_coba,paste0(getwd(),"/output/ds_coba_",Sys.Date(),".txt"),sep = "\t",row.names = FALSE)
+
+# Dataset für den RK Vertrieb
+dataset <- dataset %>%
+  mutate(BausteinArt = as.character(BausteinArt),
+         ist_ratenschutz = ifelse(!is.na(BausteinArt),1,0))
+
 write.table(dataset,paste0(getwd(),"/output/dataset_",Sys.Date(),".txt"),sep = "\t",row.names = FALSE)
 
 print("Fertig")
