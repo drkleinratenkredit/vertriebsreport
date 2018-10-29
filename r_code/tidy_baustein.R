@@ -7,7 +7,7 @@ baustein <- bausteine %>%
          Sollzins = str_replace(Sollzins,",","."),Sollzins = as.numeric(Sollzins),
          Effektivzins = str_replace(Effektivzins,",","."),Effektivzins = as.numeric(Effektivzins),
          LaufzeitJahre = str_replace(LaufzeitJahre,",","."),LaufzeitJahre = as.numeric(LaufzeitJahre),
-         AuszahlungsBetrag = str_replace(AuszahlungsBetrag,",","."),AuszahlungsBetrag = as.numeric(AuszahlungsBetrag),
+         AuszahlungsBetrag = str_replace(AuszahlungsBetrag,",","."),AuszahlungsBetrag = as.integer(AuszahlungsBetrag),
          BausteinProduktanbieterId = as.factor(BausteinProduktanbieterId),
          Produktkategorie = as.factor(Produktkategorie),
          LaufzeitJahre = LaufzeitJahre * 12)

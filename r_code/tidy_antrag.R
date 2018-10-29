@@ -83,7 +83,11 @@ antrag <- left_join(antrag, rsv_baustein, by = "AntragsNummer")
 # setzen kann. Dadurch werden bei uns im System, Anträge auf 'Eingereicht' gesetzt, die tatsächlich nie eingereicht wurden.
 #--------------------------------------------------------------------------------------------------------------------------
 antrag <- antrag %>% 
-  mutate(DSL_hat_storniert = ifelse(ProduktAnbieterId == "DSL_BANK_RATENKREDIT" & (StatusVonDatum - AntragBeantragtAntragstellerAmDatum) > days_until_cancellation & Statusrang > 3,1,0))
+  mutate(DSL_hat_storniert = ifelse(ProduktAnbieterId == "DSL_BANK_RATENKREDIT" & Status == "ABGELEHNT_PRODUKTANBIETER" &
+                                      is.na(AntragUnterschriebenAntragstellerAmDatum) & is.na(AntragUnterschriebenBeideAmDatum) &
+                                      AntragAutomatischAbgelehnt == FALSE & 
+                                      (StatusVonDatum - AntragBeantragtAntragstellerAmDatum) > days_until_cancellation,1,0))
+
 
 
 
