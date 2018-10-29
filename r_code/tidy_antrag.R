@@ -1,6 +1,6 @@
 
 #-------------------------------------------------------------------------------
-# Nur im Report 'bausteine' wird der tatsächliche Auszahlungsbetrag dokumentiert
+# Nur im Report 'bausteine' wird der tatsächliche Anfragebetrag dokumentiert
 #-------------------------------------------------------------------------------
 t_antrag <- left_join(teilantraege, kreditbetrag_baustein, by = "AntragsNummer")
 
